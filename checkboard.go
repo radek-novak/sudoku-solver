@@ -1,6 +1,7 @@
 package main
 
-import "fmt"
+// Board ..
+type Board [9][9]int8
 
 // CheckNine (isValid, isSolved)
 func CheckNine(nine [9]int8) (bool, bool) {
@@ -86,13 +87,13 @@ func CheckMiniSquares(board Board) (bool, bool) {
 func CheckBoard(board Board) (bool, bool) {
 	isLinesValid, isLinesSolved := CheckLines(board)
 	if !isLinesValid {
-		fmt.Println("isLinesVali not")
+		// fmt.Println("isLinesVali not")
 		return false, false
 	}
 
 	isColsValid, isColsSolved := CheckCols(board)
 	if !isColsValid {
-		fmt.Println("isColsValid not")
+		// fmt.Println("isColsValid not")
 		return false, false
 	}
 

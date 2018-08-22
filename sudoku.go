@@ -1,12 +1,24 @@
 package main
 
-import "fmt"
-
-// Board ..
-type Board [9][9]int8
-
 func main() {
 	board := ReadInput()
+	queue := []Board{}
+	queue = append(queue, board)
 
-	fmt.Println(CheckBoard(board))
+	for {
+		lastIx := len(queue) - 1
+		currentBoard := queue[lastIx]
+		isValid, isSolved := CheckBoard(currentBoard)
+
+		if isSolved {
+			PrettyPrint(currentBoard)
+			return
+		}
+
+		queue = queue[:lastIx]
+
+		if isValid {
+			queue = append(queue, GetNextBoards(currentBoard)...)
+		}
+	}
 }
