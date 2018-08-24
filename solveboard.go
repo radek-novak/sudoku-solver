@@ -26,16 +26,3 @@ func GetNextBoards(board Board) (ret []Board) {
 
 	return
 }
-
-// Solve ..
-func Solve(board Board) interface{} {
-	isValid, isSolved := CheckBoard(board)
-
-	if isSolved {
-		return board
-	}
-	if isValid {
-
-	}
-	return nil
-}
