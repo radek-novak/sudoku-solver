@@ -1,6 +1,7 @@
 (ns sudoku)
 
 (def one-to-nine (take 9 (iterate inc 1)))
+(def indices (take 9 (iterate inc 0)))
 
 (defn row-complete? [row]
   (= 9 (count (set (concat one-to-nine row)))))
@@ -19,7 +20,7 @@
      (recur (inc i) (conj ret (get-col matrix i))))))
 
 (defn get-diagonal [matrix]
-  (map #(get (get matrix %) %) (take 9 (iterate inc 0))))
+  (map #(get (get matrix %) %) indices))
 
 (defn get-three [row off] (subvec row off (+ off 3)))
 
@@ -30,7 +31,7 @@
 (defn get-squares [matrix]
   (map
    (fn [x] (get-square matrix (* 3 (quot x 3)) (* 3 (mod x 3))))
-   (take 9 (iterate inc 0))))
+   indices))
 
 
 (defn get-all-rows [matrix]
@@ -68,9 +69,10 @@
       (sudoku-solved? current) current
       (sudoku-valid? current)
       (recur
-       (concat (rest queue) (generate-boards current))
-       (first queue))
-      :else (recur (rest queue) (first queue)))))
+       (concat (drop-last queue) (generate-boards current))
+       (last queue))
+      ; `rest` and `first` causes StackOverflowError
+      :else (recur (drop-last queue) (last queue)))))
 
 (defn load-sudoku-file [path]
   (->> path
