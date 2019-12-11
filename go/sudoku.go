@@ -1,46 +1,47 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"sync/atomic"
+	"runtime"
+	"sync"
+	"time"
 )
 
-func worker(boardToSolve <-chan Board, nextBoardsChan chan<- []Board) {
-	for board := range boardToSolve {
+func worker(queue *[]Board, mutex *sync.Mutex, done chan<- Board) {
+	for {
+		mutex.Lock()
+		lastIx := len(*queue) - 1
+		board := (*queue)[lastIx]
+		*queue = (*queue)[:lastIx]
+		mutex.Unlock()
+
 		isValid, isSolved := CheckBoard(board)
+
 		if isSolved {
-			PrettyPrint(board)
-			os.Exit(0)
+			done <- board
+			break
 		}
+
 		if isValid {
-			nextBoardsChan <- GetNextBoards(board)
+			boards := GetNextBoards(board)
+			mutex.Lock()
+			*queue = append(*queue, boards...)
+			mutex.Unlock()
 		}
 	}
 }
 
 func main() {
-	var ops int32
-
+	var mutex = sync.Mutex{}
 	board := ReadInput()
-	boardToSolve := make(chan Board, 49900)
-	nextBoardsChan := make(chan []Board, 300)
+	done := make(chan Board)
+	queue := make([]Board, 1)
+	queue = append(queue, board)
 
-	for w := 0; w < 4; w++ {
-		go worker(boardToSolve, nextBoardsChan)
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go worker(&queue, &mutex, done)
+
+		time.Sleep(10 * time.Millisecond)
 	}
 
-	boardToSolve <- board
-
-	for nextBoards := range nextBoardsChan {
-		atomic.AddInt32(&ops, 1)
-		i := atomic.LoadInt32(&ops)
-		if i%100 == 0 {
-			fmt.Println(i)
-		}
-
-		for _, board := range nextBoards {
-			boardToSolve <- board
-		}
-	}
+	PrettyPrint(<-done)
 }
