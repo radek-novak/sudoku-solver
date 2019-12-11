@@ -8,10 +8,12 @@
 
 (defn row-valid? [nine]
   (let [filtered (filter #(not= 0 %) nine)]
-    (= (count filtered) (count (set filtered)))))
+    (if (empty? filtered)
+      true
+      (apply distinct? filtered))))
 
 (defn get-col [matrix col]
-  (into (vector) (map #(get % col) matrix)))
+  (apply vector (map #(get % col) matrix)))
 
 (defn rotate-matrix [matrix]
   (loop [i 0 ret []]
@@ -32,7 +34,6 @@
   (map
    (fn [x] (get-square matrix (* 3 (quot x 3)) (* 3 (mod x 3))))
    indices))
-
 
 (defn get-all-rows [matrix]
   (let [columns (rotate-matrix matrix)]
@@ -63,16 +64,15 @@
        one-to-nine))
 
 (defn solve-sudoku [matrix]
-  (loop [queue (list matrix) current matrix]
+  (loop [queue (hash-set matrix) current matrix]
     (cond
       (nil? current) nil
       (sudoku-solved? current) current
-      (sudoku-valid? current)
+      :else
       (recur
-       (concat (drop-last queue) (generate-boards current))
-       (last queue))
       ; `rest` and `first` causes StackOverflowError
-      :else (recur (drop-last queue) (last queue)))))
+       (concat (drop-last queue) (filter sudoku-valid? (generate-boards current)))
+       (last queue)))))
 
 (defn load-sudoku-file [path]
   (->> path
