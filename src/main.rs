@@ -37,7 +37,9 @@ fn main() {
 
     sudoku::print_board(parsed_board);
 
-    let row2 = sudoku::get_row(&parsed_board, 1);
-    println!("{:?}", row2);
-    println!("{:?}", sudoku::get_column(&parsed_board, 2));
+    for s in 0..9 {
+        println!("{:?}", sudoku::get_row(&parsed_board, s));
+        println!("{:?}", sudoku::get_column(&parsed_board, s));
+        println!("{:?}", sudoku::get_square(&parsed_board, s));
+    }
 }
