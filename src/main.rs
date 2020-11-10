@@ -4,13 +4,13 @@ use std::env;
 use std::fs;
 
 fn parse_board(s: String) -> sudoku::BoardArray {
-    let mut parsed_board: [u8; 81] = [0; 81];
+    let mut parsed_board: sudoku::BoardArray = [0; 81];
     let mut pos = 0;
 
     for l in s.chars() {
         match l.to_digit(10) {
             Some(val) => {
-                parsed_board[pos] = val as u8;
+                parsed_board[pos] = val as usize;
                 pos += 1;
             }
             None => continue,
@@ -37,9 +37,11 @@ fn main() {
 
     sudoku::print_board(parsed_board);
 
-    for s in 0..9 {
-        println!("{:?}", sudoku::get_row(&parsed_board, s));
-        println!("{:?}", sudoku::get_column(&parsed_board, s));
-        println!("{:?}", sudoku::get_square(&parsed_board, s));
-    }
+    // for s in 0..9 {
+    //     println!("{:?}", sudoku::get_row(&parsed_board, s));
+    //     println!("{:?}", sudoku::get_column(&parsed_board, s));
+    //     println!("{:?}", sudoku::get_square(&parsed_board, s));
+    // }
+
+    println!("{:?}", sudoku::valid_board(&parsed_board));
 }
