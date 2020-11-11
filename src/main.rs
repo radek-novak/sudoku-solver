@@ -3,23 +3,6 @@ use sudoku;
 use std::env;
 use std::fs;
 
-fn parse_board(s: String) -> sudoku::BoardArray {
-    let mut parsed_board: sudoku::BoardArray = [0; 81];
-    let mut pos = 0;
-
-    for l in s.chars() {
-        match l.to_digit(10) {
-            Some(val) => {
-                parsed_board[pos] = val as usize;
-                pos += 1;
-            }
-            None => continue,
-        }
-    }
-
-    parsed_board
-}
-
 fn retrieve_filename() -> String {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
@@ -33,9 +16,13 @@ fn main() {
     let filename = retrieve_filename();
     let contents = fs::read_to_string(filename).expect("Couldn't read the file");
 
-    let parsed_board = parse_board(contents);
+    let parsed_board = sudoku::parse_board(contents);
 
-    sudoku::print_board(parsed_board);
+    // sudoku::print_board(parsed_board);
+
+    let b = sudoku::Board::new(parsed_board);
+
+    b.print_board();
 
     // for s in 0..9 {
     //     println!("{:?}", sudoku::get_row(&parsed_board, s));
@@ -43,5 +30,5 @@ fn main() {
     //     println!("{:?}", sudoku::get_square(&parsed_board, s));
     // }
 
-    println!("{:?}", sudoku::valid_board(&parsed_board));
+    // println!("{:?}", sudoku::valid_board(&parsed_board));
 }

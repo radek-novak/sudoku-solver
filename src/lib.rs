@@ -22,7 +22,25 @@ const FIRST_ROW: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
 pub type BoardArray = [usize; 81];
 
 pub struct Board {
-  pub values: BoardArray,
+  values: BoardArray,
+}
+
+impl Board {
+  pub fn new(input: BoardArray) -> Board {
+    Board { values: input }
+  }
+
+  pub fn print_board(&self) {
+    print_board(self.values);
+  }
+
+  pub fn valid_board(&self) -> bool {
+    valid_board(&self.values)
+  }
+
+  pub fn get_next_empty(&self) -> Option<usize> {
+    return self.values.iter().position(|&x| x == 0);
+  }
 }
 
 pub fn print_board(board: BoardArray) {
@@ -46,9 +64,6 @@ fn get_row(input: &BoardArray, row_idx: usize) -> [usize; 9] {
   }
 
   return row;
-  // let start = row_idx * 9;
-  // let end = start + 9;
-  // return &input[start..end];
 }
 
 fn get_column(input: &BoardArray, col_i: usize) -> [usize; 9] {
@@ -74,15 +89,15 @@ fn get_square(input: &BoardArray, sq_idx: usize) -> [usize; 9] {
 }
 
 fn valid_nine(nine: [usize; 9]) -> bool {
-  let mut results: [bool; 9] = [false; 9];
+  let mut results: [bool; 10] = [false; 10];
 
   for i in 0..9 {
     let current = nine[i];
-    if results[current] {
-      return false;
-    }
     if current == 0 {
       continue;
+    }
+    if results[current] {
+      return false;
     }
     results[current] = true;
   }
@@ -103,15 +118,40 @@ pub fn valid_board(input: &BoardArray) -> bool {
   return true;
 }
 
+pub fn parse_board(s: String) -> BoardArray {
+  let mut parsed_board: BoardArray = [0; 81];
+  let mut pos = 0;
+
+  for l in s.chars() {
+    match l.to_digit(10) {
+      Some(val) => {
+        parsed_board[pos] = val as usize;
+        pos += 1;
+      }
+      None => continue,
+    }
+  }
+
+  parsed_board
+}
+
 #[cfg(test)]
 mod tests {
+  const VALID_BOARD: &str =
+    "040000179002008054006005008080070910050090030019060040300400700570100200928000060";
   #[test]
   fn check_nine_works() {
     assert_eq!(super::valid_nine([0, 1, 2, 3, 4, 5, 6, 7, 8]), true);
-    assert_eq!(super::valid_nine([0, 1, 2, 3, 0, 5, 6, 7, 8]), true);
+    assert_eq!(super::valid_nine([0, 1, 2, 3, 0, 5, 6, 9, 8]), true);
     assert_eq!(super::valid_nine([3, 1, 1, 1, 1, 2, 2, 3, 3]), false);
     assert_eq!(super::valid_nine([0, 1, 1, 1, 1, 2, 2, 3, 3]), false);
     assert_eq!(super::valid_nine([0, 1, 2, 3, 4, 5, 6, 8, 8]), false);
     assert_eq!(super::valid_nine([0, 1, 2, 3, 4, 5, 6, 1, 8]), false);
+  }
+  #[test]
+  fn check() {
+    let board_array = super::parse_board(VALID_BOARD.to_string());
+
+    assert_eq!(super::valid_board(&board_array), true);
   }
 }
