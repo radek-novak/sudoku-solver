@@ -1,4 +1,22 @@
-// magic row, refer to idx.txt
+// Row of indices of the small sudoku squares
+//
+// Find the first index of any square by multiplying that index in the
+// first row by 3.
+// E.g. square 7 is [0, 7] -> 19 * 3 -> 57. To find the remaining indices
+// add the first row: 57+0, 57+1, 57+2, 57+9, +10, ... +20
+//
+//      0  1  2  3  4  5  6  7  8
+//    ___________________________
+// 0 | 00 01 02 09 10 11 18 19 20
+// 1 | 03 04 05 12 13 14 21 22 23
+// 2 | 06 07 08 15 16 17 24 25 26
+// 3 | 27 28 29 36 37 38 47 48 49
+// 4 | 30 31 32 39 40 41 50 51 52
+// 5 | 33
+// 6 | 54
+// 7 | 57
+// 8 | 60 61 62 69 70 71 78 79 80
+//
 const FIRST_ROW: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
 
 pub type BoardArray = [usize; 81];
