@@ -139,6 +139,8 @@ pub fn parse_board(s: String) -> BoardArray {
 mod tests {
   const VALID_BOARD: &str =
     "040000179002008054006005008080070910050090030019060040300400700570100200928000060";
+  const INVALID_BOARD: &str =
+    "440000179002008054006005008080070910050090030019060040300400700570100200928000060";
   #[test]
   fn check_nine_works() {
     assert_eq!(super::valid_nine([0, 1, 2, 3, 4, 5, 6, 7, 8]), true);
@@ -149,9 +151,20 @@ mod tests {
     assert_eq!(super::valid_nine([0, 1, 2, 3, 4, 5, 6, 1, 8]), false);
   }
   #[test]
-  fn check() {
+  fn check_board() {
     let board_array = super::parse_board(VALID_BOARD.to_string());
-
+    let inv_board_array = super::parse_board(INVALID_BOARD.to_string());
     assert_eq!(super::valid_board(&board_array), true);
+    assert_eq!(super::valid_board(&inv_board_array), false);
+  }
+  #[test]
+  fn next_num() {
+    let valid_board_array = super::parse_board(VALID_BOARD.to_string());
+    let invalid_board_array = super::parse_board(INVALID_BOARD.to_string());
+    let vb = super::Board::new(valid_board_array);
+    let ib = super::Board::new(invalid_board_array);
+
+    assert_eq!(vb.get_next_empty(), Some(0));
+    assert_eq!(ib.get_next_empty(), Some(2));
   }
 }
