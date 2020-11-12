@@ -41,6 +41,26 @@ impl Board {
   pub fn get_next_empty(&self) -> Option<usize> {
     return self.values.iter().position(|&x| x == 0);
   }
+
+  fn get_next_clone(&self, idx: usize, num: usize) -> Board {
+    let mut b = Board::new(self.values);
+    b.values[idx] = num;
+
+    return b;
+  }
+
+  pub fn get_next_boards(&self) -> Option<Vec<Board>> {
+    match self.get_next_empty() {
+      Some(i) => {
+        let mut boards: Vec<Board> = vec![];
+        for num in 1..10 {
+          boards.push(self.get_next_clone(i, num));
+        }
+        return Some(boards);
+      }
+      None => return None,
+    };
+  }
 }
 
 pub fn print_board(board: BoardArray) {
