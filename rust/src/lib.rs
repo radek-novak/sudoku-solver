@@ -21,6 +21,7 @@ const FIRST_ROW: [usize; 9] = [0, 1, 2, 9, 10, 11, 18, 19, 20];
 
 pub type BoardArray = [usize; 81];
 
+#[derive(Copy, Clone)]
 pub struct Board {
   values: BoardArray,
 }

@@ -17,18 +17,40 @@ fn main() {
     let contents = fs::read_to_string(filename).expect("Couldn't read the file");
 
     let parsed_board = sudoku::parse_board(contents);
+    let initial_board = sudoku::Board::new(parsed_board);
 
-    // sudoku::print_board(parsed_board);
+    // initial_board.print_board();
 
-    let b = sudoku::Board::new(parsed_board);
+    let mut queue = vec![initial_board];
+    let mut current = queue[0];
 
-    b.print_board();
+    loop {
+        if current.valid_board() {
+            let next_boards = current.get_next_boards();
 
-    // for s in 0..9 {
-    //     println!("{:?}", sudoku::get_row(&parsed_board, s));
-    //     println!("{:?}", sudoku::get_column(&parsed_board, s));
-    //     println!("{:?}", sudoku::get_square(&parsed_board, s));
-    // }
+            match next_boards {
+                Some(nb) => {
+                    for next_board in nb {
+                        queue.push(next_board);
+                    }
+                }
+                None => {
+                    current.print_board();
+                    break;
+                }
+            }
+        }
 
-    // println!("{:?}", sudoku::valid_board(&parsed_board));
+        let last = queue.pop();
+
+        current = match last {
+            Some(board) => board,
+            None => {
+                // Ran out of valid options,
+                // either the puzzle doesn't have solution or
+                // the program is incorrect.
+                panic!("Solving error, puzzle is invalid");
+            }
+        }
+    }
 }
